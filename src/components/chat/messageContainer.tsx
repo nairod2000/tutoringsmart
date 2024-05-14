@@ -1,14 +1,16 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Box } from '@mui/material';
-import { useHistoryState } from '../../context/historyContext';
+import { useHistoryState, useHistoryStateUpdate } from '../../context/historyContext';
 import Message from './message';
+import LLMMessage from './llmMessage';
+import { ChatMessage, senders } from '../../types/chats';
+import { v4 as uuidv4 } from 'uuid';
 
 export default function MessageContainer() {
   const chatHistory = useHistoryState();
   const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    console.log(chatHistory);
     if (containerRef.current) {
       containerRef.current.scrollTop = containerRef.current.scrollHeight;
     }
@@ -29,9 +31,13 @@ export default function MessageContainer() {
       }}
     >
       {chatHistory?.map((chat) =>
-        chat.messages.map((message) => (
-          <Message message={message} />
-        ))
+        chat.messages.map((message) =>
+          message.sender === senders.Tutor ? (
+            <LLMMessage key={message.id} message={message} />
+          ) : (
+            <Message key={message.id} message={message} />
+          )
+        )
       )}
     </Box>
   );

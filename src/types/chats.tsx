@@ -1,6 +1,6 @@
 export enum senders {
   User  = 'User',
-  TUTOR = 'Tutor'
+  Tutor = 'LLM'
 }
 
 export interface ChatMessage {
