@@ -1,19 +1,8 @@
 import React, { useState, useContext, ReactNode, createContext } from 'react';
+import { ChatHistory } from '../types/chats';
 
-interface ChatMessage {
-  id: string;
-  sender: string;
-  message:string;
-  timestamp: Date;
-}
-
-interface ChatHistory {
-  chatId: string;
-  messages: ChatMessage[];
-}
-
-const HistoryStateContext = createContext<ChatHistory[]|null>(null);
-const HistoryStateUpdateContext = createContext<React.Dispatch<React.SetStateAction<ChatHistory[] | null>> | undefined>(undefined);
+const HistoryStateContext = createContext<ChatHistory[]>([]);
+const HistoryStateUpdateContext = createContext<React.Dispatch<React.SetStateAction<ChatHistory[]>> | undefined>(undefined);
 
 export const useHistoryState = () => {
   return useContext(HistoryStateContext);
@@ -28,7 +17,12 @@ interface StateContextProviderProps {
 }
 
 export const StateContextProvider: React.FC<StateContextProviderProps> = ({ children }) => {
-  const [context, setContext] = useState<ChatHistory[]|null>(null);
+  const [context, setContext] = useState<ChatHistory[]>([
+    {
+      chatId: 'default',
+      messages: [],
+    }
+  ]);
 
   return (
     <HistoryStateContext.Provider value={context}>
