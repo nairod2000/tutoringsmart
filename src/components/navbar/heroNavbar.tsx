@@ -18,7 +18,7 @@ export default function HeroNavbar() {
           <Link href="#about" passHref>
             <Button color="inherit">About</Button>
           </Link>
-          <Link href="/home" passHref>
+          <Link href="/signup" passHref>
             <Button variant="contained" color="primary">Sign Up</Button>
           </Link>
         </Box>
