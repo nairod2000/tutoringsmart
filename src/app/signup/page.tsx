@@ -13,7 +13,7 @@ import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import { useRouter } from 'next/navigation';
-import { signup } from '../../services/authServices';
+import { login, signup } from '../../services/authServices';
 
 function Copyright(props: any) {
   return (
@@ -38,6 +38,10 @@ export default function SignUp() {
       await signup(
         data.get('firstName').toString(),
         data.get('lastName').toString(),
+        data.get('email').toString(),
+        data.get('password').toString(),
+      );
+      await login(
         data.get('email').toString(),
         data.get('password').toString(),
       );
