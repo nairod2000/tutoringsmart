@@ -16,7 +16,7 @@ export async function signup(firstName: string, lastName: string, email: string,
 }
 
 export const login = async (username: string, password: string) => {
-  const response = await axiosInstance.post('api/auth/login/', { username, password });
+  const response = await axiosInstance.post('/api/auth/login/', { username, password });
   if (response.data.access && response.data.refresh) {
     const user = {
       token: response.data.access,

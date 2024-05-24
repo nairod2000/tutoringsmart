@@ -1,7 +1,6 @@
 // src/services/api.ts
 import axios from 'axios';
 import { getCurrentUser, logout } from '../services/authServices';
-import { useRouter } from 'next/navigation';
 
 const API_URL = 'http://localhost:8000/';
 
@@ -32,11 +31,11 @@ axiosInstance.interceptors.response.use(
       originalRequest._retry = true;
       try {
         const user = getCurrentUser();
-        const verifyResponse = await axios.post(API_URL + 'auth/token/verify/', {
+        const verifyResponse = await axios.post(API_URL + 'api/auth/token/verify/', {
           token: user.token,
         });
         if (verifyResponse.status !== 200) {
-          const refreshResponse = await axios.post(API_URL + 'auth/token/refresh/', {
+          const refreshResponse = await axios.post(API_URL + 'api/auth/token/refresh/', {
             refresh: user.refreshToken,
           });
           if (refreshResponse.status === 200) {
@@ -49,8 +48,6 @@ axiosInstance.interceptors.response.use(
         }
       } catch (refreshError) {
         logout();
-        const router = useRouter();
-        router.push('/login');
       }
     }
     return Promise.reject(error);
