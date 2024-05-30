@@ -1,9 +1,9 @@
 'use client'
-import Navbar from "../../components/navbar/navbar"
+import Navbar from "../../../components/navbar/navbar"
 import React from 'react';
-import TopicsProvider, { useTopics } from "../../context/topicsContext";
-import TopicList from "../../components/topics/topicList";
-import { Container, Typography } from '@mui/material';
+import TopicsProvider from "../../../context/topicsContext";
+import TopicList from "../../../components/topics/topicList";
+import { Container } from '@mui/material';
 
 export default function Course() {
 

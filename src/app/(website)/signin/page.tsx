@@ -16,7 +16,8 @@ import {
   Alert,
 } from '@mui/material';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
-import { login } from '../../services/authServices';
+import { useAuth } from '../../../context/authContext';
+
 
 const SignInSchema = Yup.object().shape({
   email: Yup.string().email('Invalid email').required('Email is required'),
@@ -26,17 +27,17 @@ const SignInSchema = Yup.object().shape({
 export default function SignIn() {
   const router = useRouter();
   const [serverError, setServerError] = useState('');
+  const { login } = useAuth();
 
   const handleSubmit = async (
     values: { email: string; password: string },
     { setSubmitting }: FormikHelpers<any>
   ) => {
-    setServerError(''); // Clear previous server error
+    setServerError('');
     try {
       await login(values.email, values.password);
       router.push('/home');
     } catch (error: any) {
-      //console.error('Login failed:', error);
       setServerError('Invalid email or password');
     }
     setSubmitting(false);

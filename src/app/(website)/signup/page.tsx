@@ -16,7 +16,7 @@ import {
   Alert, // Importing Alert for displaying error messages
 } from '@mui/material';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
-import { signup, login } from '../../services/authServices'; // Adjust the path as needed
+import { useAuth } from '../../../context/authContext';
 
 const SignUpSchema = Yup.object().shape({
   firstName: Yup.string()
@@ -41,6 +41,7 @@ const SignUpSchema = Yup.object().shape({
 export default function SignUp() {
   const router = useRouter();
   const [serverError, setServerError] = useState('');
+  const { login, signup } = useAuth();
 
   const handleSubmit = async (
     values: { firstName: string; lastName: string; email: string; password: string },
