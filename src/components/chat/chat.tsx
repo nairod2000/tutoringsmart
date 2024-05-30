@@ -5,9 +5,12 @@ import { DrawerProvider, useDrawer } from '../../context/drawerContext'
 import HistoryDrawer from '../history/historyDrawer';
 import Navbar from '../navbar/navbar';
 import { StateContextProvider } from '../../context/historyContext';
-import { useRef, useState, useEffect } from 'react';
+import useAuthProtection from '../../hooks/useAuthProtection';
+
 
 export default function Chat() {
+  useAuthProtection();
+  
   return (
     <DrawerProvider>
       <StateContextProvider>
