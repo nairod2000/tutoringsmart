@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react';
 import { Box } from '@mui/material';
 import InputBar from './inputBar';
 import MessageContainer from './messageContainer';
@@ -5,10 +6,11 @@ import { DrawerProvider, useDrawer } from '../../context/drawerContext'
 import HistoryDrawer from '../history/historyDrawer';
 import Navbar from '../navbar/navbar';
 import { StateContextProvider } from '../../context/historyContext';
+import axiosInstance from '../../utils/axiosInstance';
 import useAuthProtection from '../../hooks/useAuthProtection';
 
 
-export default function Chat() {
+export default function Chat({ topic }) {
   useAuthProtection();
   
   return (
@@ -16,13 +18,13 @@ export default function Chat() {
       <StateContextProvider>
         <Navbar />
         <HistoryDrawer/>
-        <ChatContent/>
+        <ChatContent topic={topic} />
       </StateContextProvider>
     </DrawerProvider>
   );
 };
 
-function ChatContent() {
+function ChatContent({ topic }) {
   const { isOpen } = useDrawer();
   const sxStyle = {
     display: 'flex',
@@ -39,9 +41,28 @@ function ChatContent() {
     overflow: 'hidden', // Prevents any overflow outside the component
   };
 
+  const [materials, setMaterials] = useState([]);
+
+  useEffect(() => {
+    const fetchMaterials = async () => {
+      try {
+        const response = await axiosInstance.get('/api/materials/sm2/', {
+          params: { topic: topic }
+        });
+        setMaterials(response.data);
+      } catch (error) {
+        console.error("Error fetching materials:", error);
+      }
+    };
+
+    if (topic) {
+      fetchMaterials();
+    }
+  }, [topic]);
+
   return (
     <Box sx={sxStyle}>
-      <MessageContainer />
+      <MessageContainer material={materials.length > 0 ? materials[0] : null} />
       <InputBar />
     </Box>
   );

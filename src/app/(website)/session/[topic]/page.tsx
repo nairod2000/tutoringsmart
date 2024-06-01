@@ -6,7 +6,6 @@ import { Box, CircularProgress } from "@mui/material";
 
 export default function Session({ params }) {
   const authLoading = useAuthProtection();
-  console.log(params.topic);
 
   if (authLoading) {
     return ( 
@@ -18,7 +17,7 @@ export default function Session({ params }) {
 
   return (
     <>
-      <Chat/>
+      <Chat topic={params.topic} />
     </>
   )
 }

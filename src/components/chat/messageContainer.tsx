@@ -3,10 +3,26 @@ import { Box } from '@mui/material';
 import { useHistoryState, useHistoryStateUpdate } from '../../context/historyContext';
 import Message from './message';
 import LLMMessage from './llmMessage';
-import { ChatMessage, senders } from '../../types/chats';
-import { v4 as uuidv4 } from 'uuid';
+import { senders } from '../../types/chats';
 
-export default function MessageContainer() {
+export default function MessageContainer({ material }) {
+  // todo: implement the eval feature
+  // todo: implement the learning feature
+
+  /*
+  Part of me wants to implement the algorithm on the frontend and the backend
+
+  The algorithm itself is probably going to consist of sm2, or a modified version of it, with a
+  simple check for when to use learn chats. On the frontend this will be as simple as checking
+  if the "learned" is set to true or false. 
+
+  But once you have that then the work flow will be:
+  1) get the sorted materials
+  2) determine chat type
+  3) playout the chat type
+  4) update queue (options for how this works)
+  5) repeat
+  */
   const chatHistory = useHistoryState();
   const containerRef = useRef<HTMLDivElement>(null);
 
