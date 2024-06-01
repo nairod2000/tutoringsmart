@@ -1,12 +1,12 @@
 'use client'
-import Chat from "../../../components/chat/chat";
-import useAuthProtection from "../../../hooks/useAuthProtection";
+import Chat from "../../../../components/chat/chat";
+import useAuthProtection from "../../../../hooks/useAuthProtection";
 import { Box, CircularProgress } from "@mui/material";
 
 
-export default function Session() {
+export default function Session({ params }) {
   const authLoading = useAuthProtection();
-  console.log(authLoading);
+  console.log(params.topic);
 
   if (authLoading) {
     return ( 

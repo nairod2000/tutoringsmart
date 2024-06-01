@@ -4,12 +4,14 @@ import { ExpandLess, ExpandMore, MoreHoriz, Add } from '@mui/icons-material';
 import { useTopics } from '../../context/topicsContext';
 import AddTopicButton from './addTopicButton';
 import DeleteConfirmationModal from './deleteConfirmationModal';
+import { useRouter } from 'next/navigation';
 
 export default function TopicItem({ topic, level = 0 }) {
   const [open, setOpen] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [anchorEl, setAnchorEl] = useState(null);
   const { deleteTopic } = useTopics();
+  const router = useRouter();
 
   const handleToggle = () => {
     setOpen(!open);
@@ -33,13 +35,17 @@ export default function TopicItem({ topic, level = 0 }) {
     setShowModal(false);
   };
 
+  const handleClick = () => {
+    router.push(`/session/${topic.name}`);
+  };
+
   return (
     <>
       <ListItem button style={{ paddingLeft: level * 20 }}>
         <IconButton onClick={handleToggle}>
           {open ? <ExpandLess /> : <ExpandMore />}
         </IconButton>
-        <ListItemText primary={topic.name} secondary={`Remaining: ${topic.remaining || 0}, Review: ${topic.review || 0}`} />
+        <ListItemText onClick={handleClick} primary={topic.name} secondary={`Remaining: ${topic.remaining || 0}, Review: ${topic.review || 0}`} />
         <ListItemSecondaryAction>
           <IconButton edge="end" onClick={handleMenuOpen}>
             <MoreHoriz />
