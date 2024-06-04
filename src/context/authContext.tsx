@@ -48,8 +48,6 @@ export const AuthProvider = ({ children }) => {
       setIsAuthenticated(false);
     }
     setAuthChecked(true);
-    console.log(user);
-    console.log(user?.token);
   };
 
   useEffect(() => {

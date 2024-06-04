@@ -62,7 +62,7 @@ function ChatContent({ topic }) {
 
   return (
     <Box sx={sxStyle}>
-      <MessageContainer material={materials.length > 0 ? materials[0] : null} />
+      { materials.length > 0 && <MessageContainer material={materials} /> }
       <InputBar />
     </Box>
   );
