@@ -4,10 +4,9 @@ import { useHistoryState, useHistoryStateUpdate } from '../../context/historyCon
 import Message from './message';
 import LLMMessage from './llmMessage';
 import { senders } from '../../types/chats';
-import axiosInstance from '../../utils/axiosInstance';
 import {v4 as uuidv4} from 'uuid';
 
-export default function MessageContainer({ material }) {
+export default function MessageContainer({ topic, material }) {
   // todo: implement the eval feature
   // todo: implement the learning feature
 
@@ -26,59 +25,63 @@ export default function MessageContainer({ material }) {
   5) repeat
   */
   const chatHistory = useHistoryState();
-  const setChatHistory = useHistoryStateUpdate();
+  const { setChatHistory, createChat } = useHistoryStateUpdate();
   const containerRef = useRef<HTMLDivElement>(null);
   const hasRunRef = useRef(false);
 
   useEffect(() => {
-    if (!hasRunRef.current && chatHistory && setChatHistory && material) {
-      hasRunRef.current = true;
-
-      // Send the full conversation history to the backend
-      const encodedMessage = encodeURIComponent(JSON.stringify({ material: material[0] }));
-      const eventSource = new EventSource(`http://localhost:8000/api/chat/start/?material=${encodedMessage}`);
-      
-      const llmMessage = {
-        id: uuidv4(),
-        sender: senders.Tutor,
-        message: '',
-        timestamp: new Date(),
-      };
-
-      setChatHistory(prevHistory => {
-        const updatedHistory = prevHistory ? [...prevHistory] : [];
-        if (updatedHistory.length === 0) {
-          updatedHistory.push({ chatId: 'default', messages: [] });
-        }
-        updatedHistory[0] = {
-          ...updatedHistory[0],
-          messages: [...updatedHistory[0].messages, llmMessage],
+    const initChat = async () => {
+      if (!hasRunRef.current && chatHistory && setChatHistory && material) {
+        hasRunRef.current = true;
+        const chatId = await createChat(topic, material.learned ? 'eval' : 'teach');
+  
+        // Send the full conversation history to the backend
+        const encodedMessage = encodeURIComponent(JSON.stringify({ material: material[0], chatId: chatId }));
+        const eventSource = new EventSource(`http://localhost:8000/api/chat/start/?data=${encodedMessage}`);
+        
+        const llmMessage = {
+          id: uuidv4(), // should be valid id from backend or not present
+          sender: senders.Tutor,
+          message: '',
+          timestamp: new Date(),
         };
-        return updatedHistory;
-      });
-      eventSource.onmessage = function(event) {
-        const result = JSON.parse(event.data);
-        if (result.end) {  // Check if the end-of-stream flag is true
-          eventSource.close();
-          console.log("Stream ended by the server.");
-        } else {
-          setChatHistory(prevHistory => {
-            const updatedHistory = prevHistory ? [...prevHistory] : [];
-            if (updatedHistory.length === 0) return prevHistory;
-            const messagesCopy = [...updatedHistory[0].messages];
-            const lastMessage = { ...messagesCopy[messagesCopy.length - 1] };
-            lastMessage.message += result;
   
-            updatedHistory[0] = {
-              ...updatedHistory[0],
-              messages: [...messagesCopy.slice(0, -1), lastMessage],
-            };
-  
-            return updatedHistory;
-          });
+        setChatHistory(prevHistory => {
+          const updatedHistory = prevHistory ? [...prevHistory] : [];
+          if (updatedHistory.length === 0) {
+            updatedHistory.push({ chatId: 'default', messages: [] });
+          }
+          updatedHistory[0] = {
+            ...updatedHistory[0],
+            messages: [...updatedHistory[0].messages, llmMessage],
+          };
+          return updatedHistory;
+        });
+        eventSource.onmessage = function(event) {
+          const result = JSON.parse(event.data);
+          if (result.end) {  // Check if the end-of-stream flag is true
+            eventSource.close();
+            console.log("Stream ended by the server.");
+          } else {
+            setChatHistory(prevHistory => {
+              const updatedHistory = prevHistory ? [...prevHistory] : [];
+              if (updatedHistory.length === 0) return prevHistory;
+              const messagesCopy = [...updatedHistory[0].messages];
+              const lastMessage = { ...messagesCopy[messagesCopy.length - 1] };
+              lastMessage.message += result;
+    
+              updatedHistory[0] = {
+                ...updatedHistory[0],
+                messages: [...messagesCopy.slice(0, -1), lastMessage],
+              };
+    
+              return updatedHistory;
+            });
+          }
         }
       }
-    }
+    };
+    initChat();
   }, [])
 
   useEffect(() => {

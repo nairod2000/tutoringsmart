@@ -7,7 +7,7 @@ import { v4 as uuidv4 } from 'uuid';
 export default function InputBar() {
   const [value, setValue] = useState('');
   const chatHistory = useHistoryState();
-  const setChatHistory = useHistoryStateUpdate();
+  const { setChatHistory } = useHistoryStateUpdate();
   const ws = useRef(null);
 
   const setupWebSocket = () => {
@@ -68,7 +68,7 @@ export default function InputBar() {
 
   const initAIMessage = () => {
     const llmMessage = {
-      id: uuidv4(),
+      id: uuidv4(), // this should be the id from the backend
       sender: senders.Tutor,
       message: '',
       timestamp: new Date(),
@@ -92,7 +92,7 @@ export default function InputBar() {
     if (event.key === 'Enter' && !event.shiftKey) {
       event.preventDefault();
       const userMessage = {
-        id: uuidv4(),
+        id: uuidv4(), // this should be the id from the backend
         sender: senders.User,
         message: value,
         timestamp: new Date(),
@@ -112,7 +112,7 @@ export default function InputBar() {
         });
 
         // Send the full conversation history to the backend
-        const encodedMessage = encodeURIComponent(JSON.stringify({ history: chatHistory, message: value }));
+        const encodedMessage = encodeURIComponent(JSON.stringify({ chatId: chatHistory[0].chatId, message: value }));
         const eventSource = new EventSource(`http://localhost:8000/api/chat/?data=${encodedMessage}`);
         initAIMessage();
         eventSource.onmessage = function(event) {
